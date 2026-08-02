@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AmiGibberishAI — Human-AI Shared Language Protocol</title>
+<meta name="description" content="The first structured language designed for human-AI communication. Not human language simplified for machines. Not machine code translated for humans. A third language where both sides are native speakers.">
+<meta property="og:title" content="AmiGibberishAI — Human-AI Shared Language Protocol">
+<meta property="og:description" content="AI-to-AI without a human anchor is noise. Human-to-AI in natural language is lossy. GibberishAI is the middle ground: compact, precise, verifiable, shared.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://amigibberishai.com">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#129309;</text></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050810;--surface:#0a0f1a;--card:#0f1525;--border:#1a2540;
+  --text:#dce1ed;--muted:#697896;--accent:#00d4aa;--accent2:#33e8c2;
+  --electric:#5b5bff;--electric2:#7d7dff;--warn:#ff6b4a;--gold:#e8b84a;
+  --font:'SF Mono',Monaco,'Cascadia Code','Fira Code',monospace;
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-glow .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.05;animation:drift 40s ease-in-out infinite;will-change:transform;contain:strict}
+.bg-glow .orb:nth-child(1){width:500px;height:500px;background:var(--accent);top:-8%;left:10%;animation-delay:0s}
+.bg-glow .orb:nth-child(2){width:400px;height:400px;background:var(--electric);bottom:5%;right:5%;animation-delay:-14s}
+.bg-glow .orb:nth-child(3){width:350px;height:350px;background:var(--warn);top:40%;left:60%;animation-delay:-28s}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.06)}66%{transform:translate(-25px,30px) scale(.95)}}
+
+.container{max-width:1100px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+nav{padding:16px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.logo{font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--electric));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{color:var(--muted);font-size:.9rem;transition:color .2s}
+.nav-links a:hover{color:var(--accent);text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:12px;font-weight:700;font-size:.95rem;border:none;cursor:pointer;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,212,170,.25)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+
+/* HERO */
+.hero{padding:80px 0 40px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:100px;background:var(--card);border:1px solid var(--border);font-size:.8rem;color:var(--electric2);margin-bottom:24px}
+.hero h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:900;line-height:1.1;margin-bottom:20px}
+.hero h1 .g1{background:linear-gradient(135deg,var(--accent),var(--electric));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero h1 .g2{background:linear-gradient(135deg,var(--electric),var(--warn));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.15rem;color:var(--muted);max-width:650px;margin:0 auto 32px}
+.hero-cta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+
+/* PROBLEM */
+.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:900px;margin:0 auto}
+.problem-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 22px;text-align:center;position:relative}
+.problem-card.wrong::after{content:'LOSSY';position:absolute;top:12px;right:12px;font-family:var(--font);font-size:.6rem;color:var(--warn);background:rgba(255,107,74,.1);padding:2px 8px;border-radius:4px;letter-spacing:.08em}
+.problem-card.right::after{content:'NATIVE';position:absolute;top:12px;right:12px;font-family:var(--font);font-size:.6rem;color:var(--accent);background:rgba(0,212,170,.1);padding:2px 8px;border-radius:4px;letter-spacing:.08em}
+.problem-icon{font-size:2.2rem;margin-bottom:12px}
+.problem-card h3{font-size:.95rem;margin-bottom:8px}
+.problem-card p{font-size:.82rem;color:var(--muted)}
+
+/* GIBBERISH SPEC */
+.spec-block{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 28px;margin-bottom:20px}
+.spec-block h3{font-size:1.1rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.spec-block h3 .tag{font-family:var(--font);font-size:.65rem;padding:2px 8px;border-radius:4px;letter-spacing:.1em}
+.token-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.token{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;font-family:var(--font)}
+.token-symbol{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+.token-name{font-size:.75rem;color:var(--muted);margin-bottom:4px}
+.token-desc{font-size:.72rem;color:var(--muted)}
+.token.intent .token-symbol{color:var(--accent)}
+.token.meaning .token-symbol{color:var(--electric2)}
+.token.verify .token-symbol{color:var(--gold)}
+.token.action .token-symbol{color:var(--warn)}
+
+/* GRAMMAR */
+.grammar-example{background:var(--surface);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:16px 20px;margin:12px 0;font-family:var(--font);font-size:.82rem;line-height:1.8}
+.grammar-example .gib{color:var(--accent);font-weight:700}
+.grammar-example .human{color:var(--electric2)}
+.grammar-example .comment{color:var(--muted);font-style:italic}
+
+/* LAYERS */
+.layer-visual{display:flex;flex-direction:column;gap:0;max-width:700px;margin:0 auto}
+.layer{background:var(--card);border:1px solid var(--border);padding:24px 28px;display:flex;align-items:center;gap:16px}
+.layer:first-child{border-radius:16px 16px 0 0}
+.layer:last-child{border-radius:0 0 16px 16px}
+.layer-num{font-family:var(--font);font-size:1.8rem;font-weight:900;opacity:.15;flex-shrink:0;width:40px}
+.layer h3{font-size:.95rem;margin-bottom:4px}
+.layer p{font-size:.8rem;color:var(--muted)}
+.layer-arrow{text-align:center;font-size:1.2rem;color:var(--accent);padding:4px 0}
+
+/* LIVE TRANSLATOR */
+.translator-section{background:var(--surface);border-radius:20px;padding:48px 36px}
+.translator{max-width:700px;margin:0 auto}
+.translator-grid{display:grid;grid-template-columns:1fr 60px 1fr;gap:0;align-items:stretch}
+.translator-col{background:var(--card);border:1px solid var(--border);padding:20px}
+.translator-col:first-child{border-radius:14px 0 0 14px}
+.translator-col:last-child{border-radius:0 14px 14px 0}
+.translator-col h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px}
+.translator-mid{display:flex;align-items:center;justify-content:center;background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.translator-mid span{font-size:1.2rem;color:var(--accent)}
+.translator-col textarea{width:100%;background:transparent;border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-family:var(--font);font-size:.82rem;resize:vertical;min-height:120px;outline:none}
+.translator-col textarea:focus{border-color:var(--accent)}
+.translator-col .output{font-family:var(--font);font-size:.82rem;min-height:120px;color:var(--accent);line-height:1.8;white-space:pre-wrap;word-break:break-all}
+.translate-btn{display:block;margin:16px auto 0;padding:12px 32px}
+
+/* DICTIONARY */
+.dict-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.dict-table th{text-align:left;padding:12px 14px;border-bottom:2px solid var(--accent);color:var(--accent);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font)}
+.dict-table td{padding:12px 14px;border-bottom:1px solid var(--border)}
+.dict-table tr:hover td{background:rgba(0,212,170,.03)}
+.dict-table .sym{font-family:var(--font);font-weight:800;color:var(--accent);font-size:.95rem}
+.dict-table .cat{font-family:var(--font);font-size:.7rem;padding:2px 6px;border-radius:3px}
+.cat-intent{color:var(--accent);background:rgba(0,212,170,.08)}
+.cat-meaning{color:var(--electric2);background:rgba(91,91,255,.08)}
+.cat-verify{color:var(--gold);background:rgba(232,184,74,.08)}
+.cat-action{color:var(--warn);background:rgba(255,107,74,.08)}
+.cat-struct{color:var(--muted);background:rgba(105,120,150,.08)}
+
+/* FEATURES */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.feature{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px 20px;transition:transform .2s}
+.feature:hover{transform:translateY(-4px)}
+.feature-icon{font-size:1.4rem;margin-bottom:10px}
+.feature h3{font-size:.95rem;margin-bottom:6px}
+.feature p{font-size:.82rem;color:var(--muted)}
+
+/* SECTIONS */
+.section{padding:80px 0}
+.section-title{text-align:center;font-size:2rem;font-weight:800;margin-bottom:12px}
+.section-sub{text-align:center;color:var(--muted);max-width:600px;margin:0 auto 48px}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:750px;margin:0 auto}
+.plan{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 28px;position:relative;transition:transform .2s}
+.plan:hover{transform:translateY(-4px)}
+.plan.popular{border-color:var(--accent);box-shadow:0 0 40px rgba(0,212,170,.06)}
+.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),var(--electric));color:#000;font-size:.75rem;font-weight:800;padding:4px 16px;border-radius:100px}
+.plan h3{font-size:1.3rem;margin-bottom:4px}
+.plan .price{font-size:2.8rem;font-weight:900;margin:16px 0 4px}
+.plan .price span{font-size:1rem;font-weight:400;color:var(--muted)}
+.plan .period{color:var(--muted);font-size:.85rem;margin-bottom:24px}
+.plan ul{list-style:none;margin-bottom:28px}
+.plan li{padding:8px 0;font-size:.88rem;color:var(--muted);display:flex;align-items:start;gap:10px}
+.plan li::before{content:"\2713";color:var(--accent);font-weight:700;flex-shrink:0}
+.plan .btn{width:100%;justify-content:center}
+
+/* FOOTER */
+footer{padding:48px 0 32px;border-top:1px solid var(--border);margin-top:80px}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;margin-bottom:32px}
+.footer-col h4{font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:12px}
+.footer-col a{display:block;color:var(--muted);font-size:.85rem;padding:4px 0}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{text-align:center;color:var(--muted);font-size:.8rem;padding-top:24px;border-top:1px solid var(--border)}
+
+/* COOKIE */
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:20px 24px;z-index:1000;display:none;animation:slideUp .3s ease}
+.cookie-banner.show{display:block}
+.cookie-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.cookie-text{flex:1;min-width:260px;font-size:.85rem;color:var(--muted)}
+.cookie-btns{display:flex;gap:10px}
+.cookie-btns button{padding:8px 20px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;border:none}
+.cookie-accept{background:var(--accent);color:#000}
+.cookie-reject{background:var(--card);color:var(--text);border:1px solid var(--border)!important}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;max-width:700px;width:100%;max-height:80vh;overflow-y:auto;padding:36px}
+.modal h2{font-size:1.5rem;margin-bottom:20px}
+.modal h3{font-size:1.1rem;margin:20px 0 8px;color:var(--accent)}
+.modal p,.modal li{font-size:.88rem;color:var(--muted);line-height:1.8}
+.modal ul{padding-left:20px}
+.modal-close{position:sticky;top:0;float:right;background:var(--card);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+@media(max-width:768px){
+  .hero{padding:50px 0 30px}
+  .section{padding:50px 0}
+  .problem-grid{grid-template-columns:1fr}
+  .translator-grid{grid-template-columns:1fr;gap:0}
+  .translator-col:first-child{border-radius:14px 14px 0 0}
+  .translator-col:last-child{border-radius:0 0 14px 14px}
+  .translator-mid{padding:10px}
+  .translator-mid span{transform:rotate(90deg)}
+  .translator-section{padding:28px 20px}
+  .dict-table{font-size:.75rem}
+  .layer{padding:18px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
+
+<div class="container">
+<nav>
+  <div class="logo">AmiGibberishAI</div>
+  <div class="nav-links">
+    <a href="#problem">Why</a>
+    <a href="#language">Language</a>
+    <a href="#translate">Translate</a>
+    <a href="#pricing">Pricing</a>
+    <a href="https://amiecosystems.com" target="_blank">ami* Ecosystem</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Human-AI Communication Protocol v1.0</div>
+  <h1>Humans speak one language.<br>AI speaks another.<br><span class="g1">This is the</span> <span class="g2">third one.</span></h1>
+  <p>AI-to-AI without a human anchor is noise. Human-to-AI in natural language is lossy. GibberishAI is the shared language where both sides are native speakers.</p>
+  <div class="hero-cta">
+    <a href="#translate" class="btn btn-primary">Try the translator</a>
+    <a href="#language" class="btn btn-outline">Read the spec</a>
+  </div>
+</section>
+
+<!-- THE PROBLEM -->
+<section class="section" id="problem">
+  <h2 class="section-title">Three communication modes</h2>
+  <p class="section-sub">Two are broken. One is new.</p>
+
+  <div class="problem-grid">
+    <div class="problem-card wrong">
+      <div class="problem-icon">&#128483;&#65039;</div>
+      <h3>Human &rarr; AI</h3>
+      <p>Natural language is ambiguous. "Make it better" means nothing to a machine. Every prompt is a lossy compression of intent.</p>
+    </div>
+    <div class="problem-card wrong">
+      <div class="problem-icon">&#129302;&#8596;&#129302;</div>
+      <h3>AI &rarr; AI</h3>
+      <p>Efficient but opaque. Modem sounds, compressed tokens, no human can audit. Without an anchor, AI agents drift into incoherence.</p>
+    </div>
+    <div class="problem-card right">
+      <div class="problem-icon">&#129309;</div>
+      <h3>Human &#8596; AI</h3>
+      <p>GibberishAI: compact semantic primitives that both sides parse natively. Precise. Auditable. Meaning-certified.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE LANGUAGE -->
+<section class="section" id="language">
+  <h2 class="section-title">The GibberishAI Language</h2>
+  <p class="section-sub">32 semantic primitives. 4 categories. 1 grammar. Enough to express any human-AI interaction.</p>
+
+  <!-- INTENT TOKENS -->
+  <div class="spec-block">
+    <h3>Intent Primitives <span class="tag" style="background:rgba(0,212,170,.1);color:var(--accent)">INTENT</span></h3>
+    <div class="token-grid">
+      <div class="token intent"><div class="token-symbol">&#916;Q</div><div class="token-name">Query</div><div class="token-desc">I am asking a question</div></div>
+      <div class="token intent"><div class="token-symbol">&#916;C</div><div class="token-name">Command</div><div class="token-desc">I want you to do this</div></div>
+      <div class="token intent"><div class="token-symbol">&#916;A</div><div class="token-name">Analyze</div><div class="token-desc">Break this down for me</div></div>
+      <div class="token intent"><div class="token-symbol">&#916;G</div><div class="token-name">Generate</div><div class="token-desc">Create something new</div></div>
+      <div class="token intent"><div class="token-symbol">&#916;V</div><div class="token-name">Verify</div><div class="token-desc">Check if this is correct</div></div>
+      <div class="token intent"><div class="token-symbol">&#916;T</div><div class="token-name">Translate</div><div class="token-desc">Convert between domains</div></div>
+      <div class="token intent"><div class="token-symbol">&#916;R</div><div class="token-name">Refine</div><div class="token-desc">Improve what exists</div></div>
+      <div class="token intent"><div class="token-symbol">&#916;X</div><div class="token-name">Explain</div><div class="token-desc">Make me understand why</div></div>
+    </div>
+  </div>
+
+  <!-- MEANING TOKENS -->
+  <div class="spec-block">
+    <h3>Meaning Markers <span class="tag" style="background:rgba(91,91,255,.1);color:var(--electric2)">MEANING</span></h3>
+    <div class="token-grid">
+      <div class="token meaning"><div class="token-symbol">&#931;F</div><div class="token-name">Factual</div><div class="token-desc">This is a verifiable fact</div></div>
+      <div class="token meaning"><div class="token-symbol">&#931;O</div><div class="token-name">Opinion</div><div class="token-desc">This is a subjective view</div></div>
+      <div class="token meaning"><div class="token-symbol">&#931;H</div><div class="token-name">Hypothesis</div><div class="token-desc">This might be true</div></div>
+      <div class="token meaning"><div class="token-symbol">&#931;I</div><div class="token-name">Instruction</div><div class="token-desc">Do exactly this</div></div>
+      <div class="token meaning"><div class="token-symbol">&#931;M</div><div class="token-name">Metaphor</div><div class="token-desc">This represents something else</div></div>
+      <div class="token meaning"><div class="token-symbol">&#931;E</div><div class="token-name">Emotion</div><div class="token-desc">This carries feeling</div></div>
+      <div class="token meaning"><div class="token-symbol">&#931;P</div><div class="token-name">Principle</div><div class="token-desc">This is a rule or axiom</div></div>
+      <div class="token meaning"><div class="token-symbol">&#931;N</div><div class="token-name">Negation</div><div class="token-desc">This is what I do NOT mean</div></div>
+    </div>
+  </div>
+
+  <!-- VERIFICATION TOKENS -->
+  <div class="spec-block">
+    <h3>Verification Tokens <span class="tag" style="background:rgba(232,184,74,.1);color:var(--gold)">VERIFY</span></h3>
+    <div class="token-grid">
+      <div class="token verify"><div class="token-symbol">&#10003;S</div><div class="token-name">Sens Valid</div><div class="token-desc">Meaning preserved</div></div>
+      <div class="token verify"><div class="token-symbol">&#10003;I</div><div class="token-name">Intent Match</div><div class="token-desc">Intent correctly interpreted</div></div>
+      <div class="token verify"><div class="token-symbol">&#10003;C</div><div class="token-name">Concordance</div><div class="token-desc">Multiple paths agree</div></div>
+      <div class="token verify"><div class="token-symbol">&#9888;D</div><div class="token-name">Divergence</div><div class="token-desc">KL divergence detected</div></div>
+      <div class="token verify"><div class="token-symbol">&#9888;H</div><div class="token-name">Hallucination</div><div class="token-desc">No factual grounding found</div></div>
+      <div class="token verify"><div class="token-symbol">&#10003;B</div><div class="token-name">Blockchain</div><div class="token-desc">Anchored on chain</div></div>
+      <div class="token verify"><div class="token-symbol">&#10003;E</div><div class="token-name">ECDSA Valid</div><div class="token-desc">Signature verified</div></div>
+      <div class="token verify"><div class="token-symbol">&#9888;M</div><div class="token-name">Manipulation</div><div class="token-desc">TVE 6-pillar flag raised</div></div>
+    </div>
+  </div>
+
+  <!-- STRUCTURAL TOKENS -->
+  <div class="spec-block">
+    <h3>Structure &amp; Flow <span class="tag" style="background:rgba(105,120,150,.1);color:var(--muted)">STRUCT</span></h3>
+    <div class="token-grid">
+      <div class="token"><div class="token-symbol" style="color:var(--muted)">{</div><div class="token-name">Block Open</div><div class="token-desc">Start semantic block</div></div>
+      <div class="token"><div class="token-symbol" style="color:var(--muted)">}</div><div class="token-name">Block Close</div><div class="token-desc">End semantic block</div></div>
+      <div class="token"><div class="token-symbol" style="color:var(--muted)">&gt;&gt;</div><div class="token-name">Pipe</div><div class="token-desc">Output feeds next input</div></div>
+      <div class="token"><div class="token-symbol" style="color:var(--muted)">::</div><div class="token-name">Context</div><div class="token-desc">Attach domain context</div></div>
+      <div class="token"><div class="token-symbol" style="color:var(--muted)">@</div><div class="token-name">Target</div><div class="token-desc">Direct to specific agent</div></div>
+      <div class="token"><div class="token-symbol" style="color:var(--muted)">#</div><div class="token-name">Tag</div><div class="token-desc">Semantic label</div></div>
+      <div class="token"><div class="token-symbol" style="color:var(--muted)">~</div><div class="token-name">Approximate</div><div class="token-desc">Fuzzy match acceptable</div></div>
+      <div class="token"><div class="token-symbol" style="color:var(--muted)">!</div><div class="token-name">Priority</div><div class="token-desc">This is critical</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- GRAMMAR -->
+<section class="section">
+  <h2 class="section-title">Grammar by example</h2>
+  <p class="section-sub">How natural language maps to GibberishAI.</p>
+
+  <div style="max-width:700px;margin:0 auto">
+    <div class="grammar-example">
+      <div class="human">Human: "Can you analyze this contract and tell me if there's anything suspicious?"</div>
+      <div class="gib">&#916;A ::legal { &#931;F contract.pdf } >> &#916;V { &#9888;M #suspicious }</div>
+      <div class="comment">// Analyze in legal context, factual input, verify for manipulation flags</div>
+    </div>
+
+    <div class="grammar-example">
+      <div class="human">Human: "Write me a poem about loneliness, but make it hopeful"</div>
+      <div class="gib">&#916;G ::creative { &#931;E loneliness + &#931;E hope } #poem ~tone:hopeful</div>
+      <div class="comment">// Generate in creative context, emotional content, fuzzy tone match</div>
+    </div>
+
+    <div class="grammar-example">
+      <div class="human">Human: "Is this AI-generated text actually based on facts or is it making things up?"</div>
+      <div class="gib">&#916;V { &#931;F? input } >> &#10003;S >> { &#9888;H | &#10003;C }</div>
+      <div class="comment">// Verify factual status, check sens, output: hallucination or concordance</div>
+    </div>
+
+    <div class="grammar-example">
+      <div class="human">Human: "Translate this legal text to Romanian but keep the exact legal meaning"</div>
+      <div class="gib">&#916;T ::legal { en >> ro } ! &#10003;S #invariance:strict</div>
+      <div class="comment">// Translate legal domain, English to Romanian, priority: semantic invariance strict</div>
+    </div>
+
+    <div class="grammar-example">
+      <div class="human">Human: "I don't want innovation, just continue the implementation practically"</div>
+      <div class="gib">&#916;R ::code { &#931;I continue } &#931;N { &#916;G #innovation } !pragmatic</div>
+      <div class="comment">// Refine code, instruction: continue, NEGATE generation of innovation, priority pragmatic</div>
+    </div>
+
+    <div class="grammar-example">
+      <div class="human">Human: "Stamp this document with its meaning and my intention, put it on blockchain"</div>
+      <div class="gib">&#916;C @AmiStampAI { &#931;F doc + &#931;P sens + &#931;I intentie } >> &#10003;E >> &#10003;B</div>
+      <div class="comment">// Command AmiStampAI: factual doc + principle meaning + instruction intention >> sign >> chain</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROTOCOL LAYERS -->
+<section class="section">
+  <h2 class="section-title">Protocol layers</h2>
+  <p class="section-sub">From human thought to verified machine action.</p>
+
+  <div class="layer-visual">
+    <div class="layer">
+      <div class="layer-num">5</div>
+      <div><h3>Human Intent</h3><p>Natural language, ambiguous, emotional, contextual</p></div>
+    </div>
+    <div class="layer-arrow">&darr;</div>
+    <div class="layer">
+      <div class="layer-num">4</div>
+      <div><h3>GibberishAI Encoding</h3><p>32 semantic primitives, structured grammar, lossless intent compression</p></div>
+    </div>
+    <div class="layer-arrow">&darr;</div>
+    <div class="layer">
+      <div class="layer-num">3</div>
+      <div><h3>Semantic Verification</h3><p>Sens validation, intent matching, concordance check, KL divergence</p></div>
+    </div>
+    <div class="layer-arrow">&darr;</div>
+    <div class="layer">
+      <div class="layer-num">2</div>
+      <div><h3>Cryptographic Certification</h3><p>ECDSA P-256 signature, SHA-256 hash, AmiStampAI notarization</p></div>
+    </div>
+    <div class="layer-arrow">&darr;</div>
+    <div class="layer">
+      <div class="layer-num">1</div>
+      <div><h3>Blockchain Anchoring</h3><p>Tezos immutable record, verifiable by anyone, forever</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE TRANSLATOR -->
+<section class="section" id="translate">
+  <div class="translator-section">
+    <h2 class="section-title">Live Translator</h2>
+    <p class="section-sub">Type natural language. Get GibberishAI. Or type GibberishAI and get the human version.</p>
+
+    <div class="translator">
+      <div class="translator-grid">
+        <div class="translator-col">
+          <h4>Human Language</h4>
+          <textarea id="human-input" placeholder="Type something you'd say to an AI..."></textarea>
+        </div>
+        <div class="translator-mid"><span>&harr;</span></div>
+        <div class="translator-col">
+          <h4>GibberishAI</h4>
+          <div class="output" id="gibberish-output">Output will appear here...</div>
+        </div>
+      </div>
+      <button class="btn btn-primary translate-btn" id="translate-btn">Translate to GibberishAI</button>
+    </div>
+  </div>
+</section>
+
+<!-- DICTIONARY -->
+<section class="section">
+  <h2 class="section-title">Full Dictionary</h2>
+  <p class="section-sub">All 32 primitives, organized by category.</p>
+
+  <div style="overflow-x:auto">
+  <table class="dict-table">
+    <thead>
+      <tr><th>Symbol</th><th>Name</th><th>Category</th><th>Meaning</th><th>Example</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="sym">&#916;Q</td><td>Query</td><td><span class="cat cat-intent">INTENT</span></td><td>Asking a question</td><td>&#916;Q ::math { prime? 17 }</td></tr>
+      <tr><td class="sym">&#916;C</td><td>Command</td><td><span class="cat cat-intent">INTENT</span></td><td>Direct instruction</td><td>&#916;C { deploy #prod }</td></tr>
+      <tr><td class="sym">&#916;A</td><td>Analyze</td><td><span class="cat cat-intent">INTENT</span></td><td>Break down / examine</td><td>&#916;A ::security { code.ts }</td></tr>
+      <tr><td class="sym">&#916;G</td><td>Generate</td><td><span class="cat cat-intent">INTENT</span></td><td>Create new content</td><td>&#916;G ::ui { landing page }</td></tr>
+      <tr><td class="sym">&#916;V</td><td>Verify</td><td><span class="cat cat-intent">INTENT</span></td><td>Check correctness</td><td>&#916;V { &#931;F claim }</td></tr>
+      <tr><td class="sym">&#916;T</td><td>Translate</td><td><span class="cat cat-intent">INTENT</span></td><td>Convert between forms</td><td>&#916;T { en >> ro }</td></tr>
+      <tr><td class="sym">&#916;R</td><td>Refine</td><td><span class="cat cat-intent">INTENT</span></td><td>Improve existing</td><td>&#916;R { &#931;I keep-structure }</td></tr>
+      <tr><td class="sym">&#916;X</td><td>Explain</td><td><span class="cat cat-intent">INTENT</span></td><td>Make understandable</td><td>&#916;X ::simple { KL divergence }</td></tr>
+      <tr><td class="sym">&#931;F</td><td>Factual</td><td><span class="cat cat-meaning">MEANING</span></td><td>Verifiable fact</td><td>&#931;F { Earth orbits Sun }</td></tr>
+      <tr><td class="sym">&#931;O</td><td>Opinion</td><td><span class="cat cat-meaning">MEANING</span></td><td>Subjective view</td><td>&#931;O { best framework }</td></tr>
+      <tr><td class="sym">&#931;H</td><td>Hypothesis</td><td><span class="cat cat-meaning">MEANING</span></td><td>Unconfirmed possibility</td><td>&#931;H { could cause regression }</td></tr>
+      <tr><td class="sym">&#931;I</td><td>Instruction</td><td><span class="cat cat-meaning">MEANING</span></td><td>Exact directive</td><td>&#931;I { use port 3000 }</td></tr>
+      <tr><td class="sym">&#931;M</td><td>Metaphor</td><td><span class="cat cat-meaning">MEANING</span></td><td>Symbolic reference</td><td>&#931;M { programs = children }</td></tr>
+      <tr><td class="sym">&#931;E</td><td>Emotion</td><td><span class="cat cat-meaning">MEANING</span></td><td>Carries feeling</td><td>&#931;E { pride + determination }</td></tr>
+      <tr><td class="sym">&#931;P</td><td>Principle</td><td><span class="cat cat-meaning">MEANING</span></td><td>Rule or axiom</td><td>&#931;P { S(M)=R }</td></tr>
+      <tr><td class="sym">&#931;N</td><td>Negation</td><td><span class="cat cat-meaning">MEANING</span></td><td>Explicit exclusion</td><td>&#931;N { &#916;G #innovation }</td></tr>
+      <tr><td class="sym">&#10003;S</td><td>Sens Valid</td><td><span class="cat cat-verify">VERIFY</span></td><td>Meaning preserved</td><td>&#10003;S #invariance:0.97</td></tr>
+      <tr><td class="sym">&#10003;I</td><td>Intent Match</td><td><span class="cat cat-verify">VERIFY</span></td><td>Correct interpretation</td><td>&#10003;I &#916;A confirmed</td></tr>
+      <tr><td class="sym">&#10003;C</td><td>Concordance</td><td><span class="cat cat-verify">VERIFY</span></td><td>Multi-path agreement</td><td>&#10003;C 3/3 agents</td></tr>
+      <tr><td class="sym">&#9888;D</td><td>Divergence</td><td><span class="cat cat-verify">VERIFY</span></td><td>KL divergence alert</td><td>&#9888;D KL=0.42</td></tr>
+      <tr><td class="sym">&#9888;H</td><td>Hallucination</td><td><span class="cat cat-verify">VERIFY</span></td><td>No factual ground</td><td>&#9888;H &#931;F not found</td></tr>
+      <tr><td class="sym">&#10003;B</td><td>Blockchain</td><td><span class="cat cat-verify">VERIFY</span></td><td>On-chain proof</td><td>&#10003;B tezos:op3f...</td></tr>
+      <tr><td class="sym">&#10003;E</td><td>ECDSA</td><td><span class="cat cat-verify">VERIFY</span></td><td>Signature valid</td><td>&#10003;E P-256 valid</td></tr>
+      <tr><td class="sym">&#9888;M</td><td>Manipulation</td><td><span class="cat cat-verify">VERIFY</span></td><td>TVE flag raised</td><td>&#9888;M pillar:3 score:0.8</td></tr>
+      <tr><td class="sym">{&thinsp;}</td><td>Block</td><td><span class="cat cat-struct">STRUCT</span></td><td>Semantic boundary</td><td>{ content here }</td></tr>
+      <tr><td class="sym">&gt;&gt;</td><td>Pipe</td><td><span class="cat cat-struct">STRUCT</span></td><td>Chain operations</td><td>&#916;A >> &#916;V >> &#10003;S</td></tr>
+      <tr><td class="sym">::</td><td>Context</td><td><span class="cat cat-struct">STRUCT</span></td><td>Domain binding</td><td>::legal ::medical</td></tr>
+      <tr><td class="sym">@</td><td>Target</td><td><span class="cat cat-struct">STRUCT</span></td><td>Agent routing</td><td>@AmiStampAI @UKBE</td></tr>
+      <tr><td class="sym">#</td><td>Tag</td><td><span class="cat cat-struct">STRUCT</span></td><td>Semantic label</td><td>#urgent #privacy</td></tr>
+      <tr><td class="sym">~</td><td>Approx</td><td><span class="cat cat-struct">STRUCT</span></td><td>Fuzzy match OK</td><td>~meaning:close</td></tr>
+      <tr><td class="sym">!</td><td>Priority</td><td><span class="cat cat-struct">STRUCT</span></td><td>Critical flag</td><td>!deploy !security</td></tr>
+      <tr><td class="sym">+</td><td>Combine</td><td><span class="cat cat-struct">STRUCT</span></td><td>Join elements</td><td>&#931;E joy + &#931;E pride</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- WHY THIS MATTERS -->
+<section class="section">
+  <h2 class="section-title">Why this matters now</h2>
+  <p class="section-sub">AI is getting faster at talking to AI. Humans are getting left behind.</p>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">&#128301;</div>
+      <h3>The GibberLink Problem</h3>
+      <p>AI agents are already communicating in compressed protocols humans can't read. Without a shared language, we lose oversight.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#9875;</div>
+      <h3>The Human Anchor</h3>
+      <p>The moment AI loses its human anchor, it eats itself. GibberishAI keeps humans in the loop with a language both sides understand natively.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#128270;</div>
+      <h3>Auditable Intent</h3>
+      <p>Every GibberishAI expression explicitly declares intent, meaning type, and verification requirements. No ambiguity. Full audit trail.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#128279;</div>
+      <h3>AmiStampAI Integration</h3>
+      <p>GibberishAI expressions can be cryptographically stamped and blockchain-anchored. Certified meaning in a certified language.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#129302;</div>
+      <h3>Anti-Hallucination Native</h3>
+      <p>The verification tokens are first-class citizens. Every response must declare its factual basis or explicitly flag uncertainty.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">&#127760;</div>
+      <h3>Language-Agnostic</h3>
+      <p>GibberishAI works across all human languages. The semantic primitives are universal. Translation is structural, not linguistic.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <h2 class="section-title">Pricing</h2>
+  <p class="section-sub">The language spec is open. The platform is commercial.</p>
+
+  <div class="pricing-grid">
+    <div class="plan">
+      <h3>Free</h3>
+      <div class="price">&#8364;0</div>
+      <div class="period">forever</div>
+      <ul>
+        <li>10 translations per day</li>
+        <li>Full dictionary access</li>
+        <li>Grammar reference</li>
+        <li>Browser-only</li>
+      </ul>
+      <a href="#translate" class="btn btn-outline">Start translating</a>
+    </div>
+    <div class="plan popular">
+      <div class="plan-badge">For builders</div>
+      <h3>Pro</h3>
+      <div class="price">&#8364;9.99<span>/mo</span></div>
+      <div class="period">billed monthly</div>
+      <ul>
+        <li>Unlimited translations</li>
+        <li>API access (REST + WebSocket)</li>
+        <li>AmiStampAI integration</li>
+        <li>Custom domain contexts</li>
+        <li>Multi-agent routing (@target)</li>
+        <li>Verification pipeline</li>
+        <li>Priority support</li>
+      </ul>
+      <button class="btn btn-primary" onclick="alert('Stripe integration coming soon.')">Subscribe</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>AmiGibberishAI</h4>
+      <a href="#problem">The problem</a>
+      <a href="#language">Language spec</a>
+      <a href="#translate">Translator</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#" onclick="openModal('privacy');return false">Privacy Policy</a>
+      <a href="#" onclick="openModal('terms');return false">Terms of Service</a>
+      <a href="#" onclick="openModal('imprint');return false">Imprint</a>
+    </div>
+    <div class="footer-col">
+      <h4>ami* Ecosystem</h4>
+      <a href="https://amiecosystems.com" target="_blank">AmiEcosystems</a>
+      <a href="https://amistampai.com" target="_blank">AmiStampAI</a>
+      <a href="https://amithoughtsai.com" target="_blank">AmiThoughtsAI</a>
+      <a href="https://amiapiai.com" target="_blank">AmiApiAI</a>
+      <a href="https://amiqiai.com" target="_blank">AmiQiAI</a>
+    </div>
+    <div class="footer-col">
+      <h4>Built by</h4>
+      <a href="https://amiecosystems.com" target="_blank">BRIDGRAI</a>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:8px">The third language.<br>Neither human nor machine.<br>Both.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2024&ndash;2026 BRIDGRAI &middot; AmiGibberishAI &middot; Commercial License &middot; All rights reserved
+  </div>
+</footer>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-privacy">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('privacy')">&times;</button>
+    <h2>Privacy Policy</h2>
+    <p>All translations run locally in your browser. No text is sent to any server in Free mode. Pro mode API calls are encrypted in transit and not stored beyond the session. GDPR: full deletion rights, no tracking, no analytics. Contact: mihairosca1982@gmail.com</p>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-terms">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('terms')">&times;</button>
+    <h2>Terms of Service</h2>
+    <p>The GibberishAI language specification (32 primitives, grammar rules) is published for reference. The translation platform, API, verification pipeline, and AmiStampAI integration are commercially licensed. Unauthorized commercial use of the platform constitutes IP infringement.</p>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-imprint">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('imprint')">&times;</button>
+    <h2>Imprint</h2>
+    <p><strong>Operator:</strong> Mihai Rosca / BRIDGRAI</p>
+    <p><strong>Location:</strong> Timisoara, Romania</p>
+    <p><strong>Contact:</strong> mihairosca1982@gmail.com</p>
+  </div>
+</div>
+
+<!-- COOKIE -->
+<div class="cookie-banner" id="cookie-banner">
+  <div class="cookie-inner">
+    <div class="cookie-text">Essential cookies only. No tracking. Your translations stay in your browser.</div>
+    <div class="cookie-btns">
+      <button class="cookie-accept" onclick="acceptCookies()">Accept</button>
+      <button class="cookie-reject" onclick="rejectCookies()">Decline</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// TRANSLATOR ENGINE
+const INTENT_MAP = [
+  { patterns: [/\b(what|how|why|when|where|who|which|is it|does it|can you tell|ce |cum |de ce|cand|unde|cine)\b/i], token: 'ΔQ' },
+  { patterns: [/\b(do|make|create|build|write|generate|produce|design|fa|creaza|construieste|scrie|genereaza)\b/i], token: 'ΔG' },
+  { patterns: [/\b(analyze|analyse|break down|examine|inspect|review|analizeaza|examineaza)\b/i], token: 'ΔA' },
+  { patterns: [/\b(check|verify|validate|confirm|test|is.*correct|verifica|valideaza)\b/i], token: 'ΔV' },
+  { patterns: [/\b(translate|convert|transform|traduce|transforma)\b/i], token: 'ΔT' },
+  { patterns: [/\b(improve|refine|fix|update|enhance|optimize|imbunatateste|corecteaza)\b/i], token: 'ΔR' },
+  { patterns: [/\b(explain|describe|clarify|what does.*mean|explica|descrie)\b/i], token: 'ΔX' },
+  { patterns: [/\b(run|execute|deploy|start|stop|push|pull|delete|ruleaza|executa)\b/i], token: 'ΔC' }
+];
+
+const MEANING_MAP = [
+  { patterns: [/\b(fact|true|proven|data|evidence|real|fapt|adevarat|dovada)\b/i], token: 'ΣF' },
+  { patterns: [/\b(think|believe|opinion|feel|prefer|my view|cred|parere|prefer)\b/i], token: 'ΣO' },
+  { patterns: [/\b(maybe|might|could|perhaps|possible|hypothesis|poate|posibil|ipoteza)\b/i], token: 'ΣH' },
+  { patterns: [/\b(must|should|exactly|precisely|do this|instruction|trebuie|exact)\b/i], token: 'ΣI' },
+  { patterns: [/\b(like|as if|metaphor|represents|symbol|ca si cum|metafora)\b/i], token: 'ΣM' },
+  { patterns: [/\b(happy|sad|angry|love|hate|fear|proud|afraid|fericit|trist|mandru|frica)\b/i], token: 'ΣE' },
+  { patterns: [/\b(rule|principle|axiom|law|always|never|regula|principiu|mereu|niciodata)\b/i], token: 'ΣP' },
+  { patterns: [/\b(not|don't|never|without|exclude|no |nu |fara|exclude)\b/i], token: 'ΣN' }
+];
+
+const CONTEXT_MAP = [
+  { patterns: [/\b(code|program|function|api|debug|software|typescript|javascript)\b/i], ctx: '::code' },
+  { patterns: [/\b(legal|contract|law|nda|compliance|gdpr)\b/i], ctx: '::legal' },
+  { patterns: [/\b(medical|health|patient|diagnosis|treatment)\b/i], ctx: '::medical' },
+  { patterns: [/\b(creative|poem|story|art|music|design)\b/i], ctx: '::creative' },
+  { patterns: [/\b(math|equation|calcul|formula|statistic)\b/i], ctx: '::math' },
+  { patterns: [/\b(security|encrypt|hack|vulnerability|attack)\b/i], ctx: '::security' },
+  { patterns: [/\b(business|revenue|profit|market|startup)\b/i], ctx: '::business' },
+  { patterns: [/\b(blockchain|tezos|crypto|web3|smart contract)\b/i], ctx: '::blockchain' }
+];
+
+const VERIFY_MAP = [
+  { patterns: [/\b(stamp|notariz|certif|sign|semnatura)\b/i], tokens: ['✓E'] },
+  { patterns: [/\b(blockchain|chain|anchor|tezos)\b/i], tokens: ['✓B'] },
+  { patterns: [/\b(hallucin|fake|made up|inventat)\b/i], tokens: ['⚠H'] },
+  { patterns: [/\b(manipulat|suspicious|suspect)\b/i], tokens: ['⚠M'] }
+];
+
+function translateToGibberish(text) {
+  if (!text.trim()) return '';
+  let parts = [];
+  let intents = [];
+  let meanings = [];
+  let contexts = [];
+  let verifications = [];
+  let subjects = [];
+
+  INTENT_MAP.forEach(function(m) {
+    m.patterns.forEach(function(p) { if (p.test(text)) intents.push(m.token); });
+  });
+  MEANING_MAP.forEach(function(m) {
+    m.patterns.forEach(function(p) { if (p.test(text)) meanings.push(m.token); });
+  });
+  CONTEXT_MAP.forEach(function(m) {
+    m.patterns.forEach(function(p) { if (p.test(text)) contexts.push(m.ctx); });
+  });
+  VERIFY_MAP.forEach(function(m) {
+    m.patterns.forEach(function(p) { if (p.test(text)) verifications.push.apply(verifications, m.tokens); });
+  });
+
+  intents = [...new Set(intents)];
+  meanings = [...new Set(meanings)];
+  contexts = [...new Set(contexts)];
+  verifications = [...new Set(verifications)];
+
+  if (intents.length === 0) intents.push('ΔQ');
+  if (meanings.length === 0) meanings.push('ΣF');
+
+  var words = text.replace(/[?.!,;:'"]/g, '').split(/\s+/).filter(function(w) { return w.length > 3; });
+  var stopWords = ['this','that','the','with','from','about','have','will','would','could','should','make','your','what','does','just','been','also','into','they','them','there','than','then','when','were','some','each','which','their','more','very','much','such','only'];
+  subjects = words.filter(function(w) { return !stopWords.includes(w.toLowerCase()); }).slice(0, 3);
+
+  var result = intents.join(' + ');
+  if (contexts.length > 0) result += ' ' + contexts.join(' ');
+  result += ' { ';
+  if (meanings.length > 0) result += meanings.join(' + ') + ' ';
+  if (subjects.length > 0) result += subjects.join(' ');
+  result += ' }';
+  if (verifications.length > 0) result += ' >> ' + verifications.join(' + ');
+
+  var urgent = /\b(urgent|asap|now|critical|important|immediately|acum|urgent|imediat)\b/i.test(text);
+  if (urgent) result += ' !priority';
+
+  return result;
+}
+
+document.getElementById('translate-btn').addEventListener('click', function() {
+  var input = document.getElementById('human-input').value;
+  var output = translateToGibberish(input);
+  document.getElementById('gibberish-output').textContent = output || 'Type something first...';
+});
+
+document.getElementById('human-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    document.getElementById('translate-btn').click();
+  }
+});
+
+// Modals
+function openModal(id) { document.getElementById('modal-' + id).classList.add('show'); }
+function closeModal(id) { document.getElementById('modal-' + id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(function(el) {
+  el.addEventListener('click', function(e) { if (e.target === el) el.classList.remove('show'); });
+});
+
+// Cookie
+(function() {
+  if (!localStorage.getItem('amigibberishai-cookies')) {
+    setTimeout(function() { document.getElementById('cookie-banner').classList.add('show'); }, 1500);
+  }
+})();
+function acceptCookies() { localStorage.setItem('amigibberishai-cookies', 'accepted'); document.getElementById('cookie-banner').classList.remove('show'); }
+function rejectCookies() { localStorage.setItem('amigibberishai-cookies', 'rejected'); document.getElementById('cookie-banner').classList.remove('show'); }
+</script>
+
+</body>
+</html>
